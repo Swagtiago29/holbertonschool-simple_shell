@@ -7,5 +7,5 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-int main(int ac, char **av);
+int main(void);
 #endif

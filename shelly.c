@@ -25,22 +25,6 @@ void syn(char **comm)
 			wait(&status);
 }
 /**
- *print_user - prints name of the user and thanks
- *@argc: number of command-line arguments passed by the user
- *@argv: an array of strings passed by the user, first one being the program
- *Return: array of strings tokenized
- */
-int print_user(int argc, char **argv)
-{
-	int i = 1;
-
-	if (argc >= 2)
-		printf("Welcome %s, thank you for using my shell! <3\n", argv[i]);
-	else
-		printf("Welcome, thank you for using my shell! <3\n");
-	return (argc);
-}
-/**
  *tokenize - tokenizes input of the user from stdin
  *@line: input of the user from stdin
  *@delim: delimiter to tokenize input
@@ -75,7 +59,7 @@ char **tokenize(char *line, const char *delim)
  *@av: an array of strings passed by the user, first one being the program
  *Return: 0 or -1
  */
-int main(int ac, char **av)
+int main(void)
 {
 	char *line = NULL;
 	size_t len = 0;
@@ -84,20 +68,12 @@ int main(int ac, char **av)
 	char **comm;
 	int j = 0;
 
-	print_user(ac, av);
 	while (1)
 	{
-		if (av[1])
-			printf("%s$ ", av[1]);
-		else
-			printf("$ ");
+		printf("$ ");
 		read = getline(&line, &len, stdin);
 		if (read == EOF)
 		{
-			if (av[1])
-				printf("\nbye-bye %s UnU", av[1]);
-			else
-				printf("\nbye-bye UnU");
 			putchar('\n');
 			break;
 		}
