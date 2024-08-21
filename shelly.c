@@ -1,6 +1,6 @@
 #include "main.h"
 /**
- *chaild - creates a child of function
+ *syn - creates a child of function
  *@comm: array of stings passed from main to execve
  *Return: void
  */
