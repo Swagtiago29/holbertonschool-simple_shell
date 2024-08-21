@@ -22,7 +22,7 @@ void syn(char **comm)
 			exit(EXIT_FAILURE);
 		}
 		else
-			wait(&status);
+			waitpid(child_pid, &status, 0);
 }
 /**
  *tokenize - tokenizes input of the user from stdin
@@ -47,6 +47,11 @@ char **tokenize(char *line, const char *delim)
 	while (token != NULL)
 	{
 		tokens[i] = strdup(token);
+		if (tokens[i] == NULL)
+		{
+			perror("strdup");
+			exit(EXIT_FAILURE);
+		}
 		i++;
 		token = strtok(NULL, delim);
 	}
@@ -64,27 +69,27 @@ int main(void)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
-	const char delim[] = " ,\n,\t";
+	const char delim[] = " ,\n\t";
 	char **comm;
 	int j = 0;
 
 	while (1)
 	{
 		printf("$ ");
+		fflush(stdout);
 		read = getline(&line, &len, stdin);
 		if (read == EOF)
 		{
 			putchar('\n');
 			break;
 		}
-		if (read == -1)
-			printf("error");
+		line[strcspn(line, "\n")] = '\0';
 		comm = tokenize(line, delim);
 		syn(comm);
 		for (j = 0; comm[j] != NULL; j++)
 			free(comm[j]);
+		free(comm);
 	}
-	free(comm);
 	free(line);
 	return (0);
 }
