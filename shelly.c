@@ -9,20 +9,24 @@ void syn(char **comm, char **environ)
 	int status;
 	pid_t child_pid;
 
-		child_pid = fork();
-		if (child_pid  == -1)
-		{
-			perror("fork");
-			exit(EXIT_FAILURE);
-		}
-		if (child_pid == 0)
-		{
-			execve(comm[0], comm, environ);
-			perror("execve");
-			exit(EXIT_FAILURE);
-		}
-		else
-			waitpid(child_pid, &status, 0);
+	if (comm[0] == NULL)
+	{	
+		return;
+	}	
+	child_pid = fork();
+	if (child_pid  == -1)
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+	if (child_pid == 0)
+	{
+		execve(comm[0], comm, environ);
+		perror("execve");
+		exit(EXIT_FAILURE);
+	}
+	else
+		waitpid(child_pid, &status, 0);
 }
 /**
  *tokenize - tokenizes input of the user from stdin
@@ -32,7 +36,7 @@ void syn(char **comm, char **environ)
  */
 char **tokenize(char *line, const char *delim)
 {
-	char **tokens = NULL;
+	char **tokens;
 	char *token = NULL;
 	int i = 0;
 
@@ -77,7 +81,7 @@ int main(int ac, char **av, char **environ)
 	{
 		if (isatty(STDIN_FILENO))
 	       	{
-            		printf("$ %i%s",ac ,av[0]);
+            		printf("$ %i%s", ac, av[1]);
             		fflush(stdout);
         	}
 
@@ -95,11 +99,12 @@ int main(int ac, char **av, char **environ)
 		}	
 		line[strcspn(line, "\n")] = '\0';
 		comm = tokenize(line, delim);
-		syn(comm, environ);
+		if (comm[0] != NULL)
+			syn(comm, environ);
 		for (j = 0; comm[j] != NULL; j++)
 			free(comm[j]);
 		free(comm);
+		free(line);
 	}
-	free(line);
 	return (0);
 }
