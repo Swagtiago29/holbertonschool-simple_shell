@@ -4,7 +4,7 @@
  *@comm: array of stings passed from main to execve
  *Return: void
  */
-void syn(char **comm)
+void syn(char **comm, char **environ)
 {
 	int status;
 	pid_t child_pid;
@@ -17,7 +17,7 @@ void syn(char **comm)
 		}
 		if (child_pid == 0)
 		{
-			execve(comm[0], comm, NULL);
+			execve(comm[0], comm, environ);
 			perror("execve");
 			exit(EXIT_FAILURE);
 		}
@@ -54,8 +54,8 @@ char **tokenize(char *line, const char *delim)
 		}
 		i++;
 		token = strtok(NULL, delim);
+		tokens[i] = NULL;
 	}
-	tokens[i] = NULL;
 	return (tokens);
 }
 /**
@@ -64,7 +64,7 @@ char **tokenize(char *line, const char *delim)
  *@av: an array of strings passed by the user, first one being the program
  *Return: 0 or -1
  */
-int main(void)
+int main(int ac, char **av, char **environ)
 {
 	char *line = NULL;
 	size_t len = 0;
@@ -75,17 +75,27 @@ int main(void)
 
 	while (1)
 	{
-		printf("$ ");
-		fflush(stdout);
-		read = getline(&line, &len, stdin);
+		if (isatty(STDIN_FILENO))
+	       	{
+            		printf("$ %i%s",ac ,av[0]);
+            		fflush(stdout);
+        	}
+
+        	read = getline(&line, &len, stdin);
+        	if (read == -1)
+	       	{
+            		if (isatty(STDIN_FILENO)) 
+                		putchar('\n');
+            		break;
+        	}
 		if (read == EOF)
 		{
 			putchar('\n');
 			break;
-		}
+		}	
 		line[strcspn(line, "\n")] = '\0';
 		comm = tokenize(line, delim);
-		syn(comm);
+		syn(comm, environ);
 		for (j = 0; comm[j] != NULL; j++)
 			free(comm[j]);
 		free(comm);
