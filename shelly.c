@@ -99,7 +99,7 @@ int main(int ac, char **av, char **environ)
 		if (strcmp(line, "exit\n") == 0)
 		{	
 			free(line);
-			exit(EXIT_FAILURE);
+			exit(EXIT_SUCCESS);
 		}
 		line[strcspn(line, "\n")] = '\0';
 		comm = tokenize(line, delim);
