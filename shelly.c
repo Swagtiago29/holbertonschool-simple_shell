@@ -82,7 +82,7 @@ int main(int ac, char **av, char **environ)
         	}
 
         	read = getline(&line, &len, stdin);
-        	if (read == -1)
+		if (read == -1)
 	       	{
             		if (isatty(STDIN_FILENO)) 
                 		putchar('\n');
@@ -93,6 +93,11 @@ int main(int ac, char **av, char **environ)
 			putchar('\n');
 			break;
 		}	
+		if (strcmp(line, "exit") == 0)
+		{	
+			exit(EXIT_FAILURE);
+			free(line);
+		}
 		line[strcspn(line, "\n")] = '\0';
 		comm = tokenize(line, delim);
 		syn(comm, environ);
