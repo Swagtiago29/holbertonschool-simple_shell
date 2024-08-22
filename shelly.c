@@ -17,8 +17,11 @@ void syn(char **comm, char **environ)
 		}
 		if (child_pid == 0)
 		{
-			execve(comm[0], comm, environ);
-			perror("execve");
+			if (execve(comm[0], comm, environ) == -1)
+			{
+				free(comm[0]);
+				perror("execve");
+			}
 			exit(EXIT_FAILURE);
 		}
 		else
@@ -30,7 +33,7 @@ void syn(char **comm, char **environ)
  *@delim: delimiter to tokenize input
  *Return: array of strings tokenized
  */
-char **tokenize(char *line, const char *delim)
+char **tokenize(char *line, char *delim)
 {
 	char **tokens = NULL;
 	char *token = NULL;
@@ -69,7 +72,7 @@ int main(int ac, char **av, char **environ)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
-	const char delim[] = " ,\n\t";
+	char delim[] = " ,\n\t";
 	char **comm;
 	int j = 0;
 
@@ -77,7 +80,7 @@ int main(int ac, char **av, char **environ)
 	{
 		if (isatty(STDIN_FILENO))
 	       	{
-            		printf("$ %i%s",ac ,av[0]);
+            		printf("$ %i%s ",ac ,av[0]);
             		fflush(stdout);
         	}
 
@@ -93,10 +96,10 @@ int main(int ac, char **av, char **environ)
 			putchar('\n');
 			break;
 		}	
-		if (strcmp(line, "exit") == 0)
+		if (strcmp(line, "exit\n") == 0)
 		{	
-			exit(EXIT_FAILURE);
 			free(line);
+			exit(EXIT_FAILURE);
 		}
 		line[strcspn(line, "\n")] = '\0';
 		comm = tokenize(line, delim);
@@ -104,7 +107,7 @@ int main(int ac, char **av, char **environ)
 		for (j = 0; comm[j] != NULL; j++)
 			free(comm[j]);
 		free(comm);
-	}
+	}	
 	free(line);
 	return (0);
 }
