@@ -83,25 +83,18 @@ int main(int ac, char **av, char **environ)
             		printf("$ %i%s ",ac ,av[0]);
             		fflush(stdout);
         	}
-
-        	read = getline(&line, &len, stdin);
+		read = getline(&line, &len, stdin);
 		if (read == -1)
 	       	{
             		if (isatty(STDIN_FILENO)) 
                 		putchar('\n');
             		break;
         	}
-		if (read == EOF)
-		{
-			putchar('\n');
-			break;
-		}	
 		if (strcmp(line, "exit\n") == 0)
 		{	
 			free(line);
 			exit(EXIT_SUCCESS);
 		}
-		line[strcspn(line, "\n")] = '\0';
 		comm = tokenize(line, delim);
 		syn(comm, environ);
 		for (j = 0; comm[j] != NULL; j++)
